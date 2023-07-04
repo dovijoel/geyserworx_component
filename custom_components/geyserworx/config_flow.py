@@ -29,7 +29,7 @@ class GeyserworxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle a flow initialized by the user."""
         if not user_input:
             return self.async_show_form(
-                step_id="init",
+                step_id="user",
                 data_schema=self.data_schema,
             )
         

@@ -4,7 +4,7 @@
       "already_configured": "Device is already configured"
     },
     "step": {
-      "init": {
+      "user": {
         "title": "Geyserworx Geyser",
         "data": {
           "base_url": "Local IP address to access the device",
