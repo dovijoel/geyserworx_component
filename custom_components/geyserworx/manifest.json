@@ -1,0 +1,11 @@
+{
+  "codeowners": ["@dovijoel"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/dovijoel/geyserworx_component/",
+  "domain": "geyserworx_component",
+  "iot_class": "local_polling",
+  "name": "Geyserworx",
+  "requirements": ["geyserworx_sdk==1.0.0"],
+  "version": "1.0.0"
+}
