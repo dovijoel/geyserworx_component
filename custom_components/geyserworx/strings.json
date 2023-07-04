@@ -1,0 +1,18 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Device is already configured"
+    },
+    "step": {
+      "init": {
+        "title": "Geyserworx Geyser",
+        "data": {
+          "base_url": "Local IP address to access the device",
+          "geyser_serial_number": "Serial number of Geyserworx unit",
+          "geyser_number": "Geyser number = 1 if you only have one geyser",
+          "update_interval": "Update interval in seconds"
+        }
+      }
+    }
+  }
+}
