@@ -8,8 +8,7 @@ from homeassistant.components.water_heater import (
     STATE_OFF
 
 )
-from homeassistant.helpers.device_registry import DeviceEntryType
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.const import ATTR_TEMPERATURE, UnitOfTemperature
 
@@ -30,14 +29,15 @@ from .coordinator import GeyserworxDataUpdateCoordinator
 
 from typing import Any
 
-async def async_setup_entry(hass, config_entry, async_add_entities) -> None:
+async def async_setup_entry(hass, config_entry: ConfigEntry, async_add_entities) -> None:
     """Set up the Geyserworx water heater (geyser) device."""
     coordinator: GeyserworxDataUpdateCoordinator = hass.data[DOMAIN][config_entry.entry_id]
 
-    async_add_entities(
-        [
-            GeyserworxWaterHeaterEntity(coordinator, config_entry.title)
-        ])
+    if config_entry.unique_id is not None:
+        async_add_entities(
+            [
+                GeyserworxWaterHeaterEntity(coordinator, str(config_entry.unique_id))
+            ])
 
 class GeyserworxWaterHeaterEntity(CoordinatorEntity[GeyserworxDataUpdateCoordinator], WaterHeaterEntity):
     """Representation of a GeyserWorx water heater (geyser) device."""
