@@ -6,6 +6,7 @@
     "step": {
       "user": {
         "title": "Geyserworx Geyser",
+        "decription": "Fill in details needed to access the Geyserworx device.",
         "data": {
           "base_url": "Local IP address to access the device",
           "geyser_serial_number": "Serial number of Geyserworx unit",
