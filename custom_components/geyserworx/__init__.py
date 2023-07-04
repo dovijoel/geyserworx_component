@@ -6,53 +6,54 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
+from .coordinator import GeyserworxDataUpdateCoordinator
+
 from .const import (
     DOMAIN,
 )
 
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = [Platform.WATER_HEATER]
+async def async_setup(hass: HomeAssistant, config: dict):
+    return True
 
-async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry
-) -> bool:
-    """Set up platform from a ConfigEntry."""
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
+    """Migrate old entry."""
+    _LOGGER.debug("Migrating from version %s", config_entry.version)
+
+    if config_entry.version == 1:
+
+        new = {**config_entry.data}
+
+        config_entry.version = 2
+        hass.config_entries.async_update_entry(config_entry, data=new)
+
+    _LOGGER.info("Migration to version %s successful", config_entry.version)
+
+    return True    
+
+
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+    """Set up the ge_home component."""
     hass.data.setdefault(DOMAIN, {})
-    hass_data = dict(entry.data)
-    # Registers update listener to update config entry when options are updated.
-    unsub_options_update_listener = entry.add_update_listener(options_update_listener)
-    # Store a reference to the unsubscribe function to cleanup if an entry is unloaded.
-    hass_data["unsub_options_update_listener"] = unsub_options_update_listener
-    hass.data[DOMAIN][entry.entry_id] = hass_data
 
-    # Forward the setup to the water heater platform.
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(entry, "water_heater")
-    )
+    """Set up ge_home from a config entry."""
+    coordinator = GeyserworxDataUpdateCoordinator(hass, entry)
+    hass.data[DOMAIN][entry.entry_id] = coordinator
+
     return True
 
 
-async def options_update_listener(
-    hass: HomeAssistant, config_entry: ConfigEntry
-):
-    """Handle options update."""
-    await hass.config_entries.async_reload(config_entry.entry_id)
-
-
-async def async_unload_entry(
-    hass: HomeAssistant, entry: ConfigEntry
-) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
-    if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
-        # Remove config entry from domain.
-        entry_data = hass.data[DOMAIN].pop(entry.entry_id)
-        # Remove options_update_listener.
-        entry_data["unsub_options_update_listener"]()
+    coordinator: GeyserworxDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
+    ok = await coordinator.async_refresh()
+    if ok:
+        hass.data[DOMAIN].pop(entry.entry_id)
 
-    return unload_ok
+    return ok
 
 
-async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    """Set up the Geyserworx component from yaml configuration."""
-    hass.data.setdefault(DOMAIN, {})
-    return True
+async def async_update_options(hass, config_entry):
+    """Update options."""
+    await hass.config_entries.async_reload(config_entry.entry_id)
