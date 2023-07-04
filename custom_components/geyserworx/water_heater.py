@@ -33,11 +33,10 @@ async def async_setup_entry(hass, config_entry: ConfigEntry, async_add_entities)
     """Set up the Geyserworx water heater (geyser) device."""
     coordinator: GeyserworxDataUpdateCoordinator = hass.data[DOMAIN][config_entry.entry_id]
 
-    if config_entry.unique_id is not None:
-        async_add_entities(
-            [
-                GeyserworxWaterHeaterEntity(coordinator, str(config_entry.unique_id))
-            ])
+    async_add_entities(
+        [
+            GeyserworxWaterHeaterEntity(coordinator, str(config_entry.unique_id))
+        ])
 
 class GeyserworxWaterHeaterEntity(CoordinatorEntity[GeyserworxDataUpdateCoordinator], WaterHeaterEntity):
     """Representation of a GeyserWorx water heater (geyser) device."""

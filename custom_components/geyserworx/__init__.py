@@ -40,7 +40,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up ge_home from a config entry."""
     coordinator = GeyserworxDataUpdateCoordinator(hass, entry)
     hass.data[DOMAIN][entry.entry_id] = coordinator
-
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(entry, "water_heater")
+    )
     return True
 
 
